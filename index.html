@@ -4,84 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wireframe Example</title>
+    <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        header {
-            width: 100%;
-            background-color: #f5f5f5;
-            padding: 10px;
-            text-align: center;
-        }
-        .container {
-            width: 80%;
-            max-width: 1200px;
-            margin: 20px auto;
-        }
-        .title {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-        .data {
-            margin-top: 10px;
-            font-size: 1.2em;
-            color: #555;
-        }
-        .image-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 20px auto;
-            text-align: center;
-        }
-        .image-container img {
-            width: 100%;
-            max-width: 200px;
-            height: auto;
-        }
-        .text-section {
-            margin: 20px 0;
-            line-height: 1.6;
-        }
-        .button-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-        .button-container button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        footer {
-            width: 100%;
-            background-color: #eee;
-            padding: 20px;
-            text-align: center;
-            margin-top: 20px;
-        }
+       
     </style>
 </head>
 <body>
 
 <header>
     <div class="container">
-        <span class="title">Título del sitio</span>
+        <h1>Título del sitio</h1>
     </div>
 </header>
 
 <main class="container">
-    <div class="data">Data: hora actual</div>
+
+
+    <select id="citySelector">
+        <option value="">Selecciona una ciudad</option>
+        <option value="America/Bogota">Bogotá</option>
+        <option value="Europe/Moscow">Moscú</option>
+        <option value="Australia/Sydney">Sidney</option>
+        <option value="Europe/Paris">París</option>
+        <option value="Asia/Tokyo">Tokio</option>
+    </select>
+    <div id="timeDisplay">
+        <span>Hora actual: <data value="">Selecciona una ciudad</data></span>
+    </div>
+    
     
     <div class="image-container">
-        <img src="https://via.placeholder.com/200x150.png?text=Play+Button" alt="Play Button">
+        <img src="https://placehold.co/800x360" alt="Imagen de un carro">
     </div>
     
     <div class="text-section">
@@ -99,8 +55,57 @@
 </main>
 
 <footer>
-    Footer
+<credit>
+    <p>Autor: Juan Diego Gutierrez</p>
+    </credit>    
 </footer>
+<script>
+   document.getElementById('citySelector').addEventListener('change', function() {
+    const city = this.value;
+    const apiUrl = `https://worldtimeapi.org/api/timezone/${city}`;
 
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const datetime = data.datetime;
+            const timezone = data.timezone;
+
+            // Convert datetime to the local time of the selected city
+            const time = new Date(datetime).toLocaleString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: timezone
+            });
+
+            const dataElement = document.querySelector('#timeDisplay data');
+            dataElement.setAttribute('value', datetime);
+            dataElement.textContent = time;
+
+            console.log('Time:', datetime);
+            console.log('Converted time:', time);
+            console.log('City selected:', this.value);
+
+            updateBackground(time);      
+
+
+        })
+        .catch(error => {
+            console.error('Error fetching the time:', error);
+        });
+});
+function updateBackground(time) {
+        setTimeout(() => {
+            const body = document.querySelector('body');
+            if (time.includes('AM')) {
+                body.style.background = 'rgb(152,184,0)';
+                body.style.background = 'linear-gradient(0deg, rgba(152,184,0,1) 0%, rgba(0,237,255,1) 78%)';
+            } else if (time.includes('PM')) {
+                body.style.background = 'rgb(184,80,0)';
+                body.style.background = 'linear-gradient(0deg, rgba(184,80,0,1) 0%, rgba(0,67,72,1) 78%)';
+            }
+        }, 1000);
+    }
+</script>
 </body>
 </html>
